@@ -10,8 +10,8 @@
         />
       </div>
       <div>
-        <button @click="logSendUser()">Logar</button>
-        <small @click="authenticated = false">Cadastrar</small>
+        <button @click="getUser()">Logar</button>
+        <small>Cadastrar</small>
       </div>
     </div>
     <div class="regUser" v-else-if="!authenticated && !logged">
@@ -24,7 +24,7 @@
         />
       </div>
       <div>
-        <button @click="regSendUser()">Cadastrar</button>
+        <button @click="createUser()">Cadastrar</button>
         <small @click="authenticated = true">Logar</small>
       </div>
     </div>
@@ -42,105 +42,16 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapState } from "vuex";
 import Board from '../components/Board.vue';
+import fetchUser from "@/mixins/fetchUser.js";
 
 export default {
   components: { Board },
   name: "Dashboard",
-  data() {
-    return {
-      tempUser: {
-        "user": "",
-        "password": "",
-        "authorized": true,
-        "title": "",
-        "link": "",
-        "subtitle": "",
-        "color": "",
-        "infos": {
-          "Telefone": "",
-          "Email": ""
-        },
-        "social": {
-          "Instagram": "",
-          "Twitter": "",
-          "Facebook": ""
-        },
-        "images": {
-            "profile": {
-              "link": "",
-              "delete": ""
-            },
-            "favicon": {
-              "link": "",
-              "delete": ""
-            },
-          "others": []
-          }
-      },
-      authenticated: true,
-      logged: false,
-      hasLink: false,
-      url: location.origin
-    };
-  },
+  mixins: [fetchUser],
   computed: {
-    user() {
-      return this.$store.state.user;
-    },
-    users() {
-      return this.$store.state.users;
-    },
-  },
-  methods: {
-    sendAlert(msg) {
-      const alert = document.createElement('small'),
-      inputs = document.querySelectorAll('input');
-      alert.classList.add("alert");
-      alert.innerText = msg;
-
-      inputs[inputs.length-1].after(alert);
-      setTimeout(() => alert.remove(), 10000);
-    },
-    regSendUser() {
-      axios
-        .post("/user/register", this.tempUser)
-        .then(() => {
-          this.authenticated = true;
-        })
-        .catch((error) => {
-          this.sendAlert(error.response.data)
-        });
-    },
-    logSendUser() {
-      axios
-        .post("/user/auth", this.tempUser)
-        .then((res) => {
-          this.$store.state.user = res.data;
-          this.logged = true;
-
-          if(this.user.link)
-            this.hasLink = true;
-        })
-        .catch((error) => {
-          this.sendAlert(error.response.data)
-        });
-    },
-    finish(){
-      if(!this.tempUser.link)
-        return this.sendAlert("O campo não pode estar vazio.");
-
-      axios
-        .post("/actions/update", { link: this.tempUser.link, user: this.tempUser.user })
-        .then(() => {
-          this.$store.state.user.link = this.tempUser.link;
-          this.hasLink = true;
-        })
-        .catch((error) => {
-          this.sendAlert(error.response.data)
-        });
-    },
+    ...mapState(['user'])
   },
   watch: {
     'tempUser.link': function() {

@@ -6,7 +6,10 @@
     <div class="content" v-for="(info, key) in user.infos" :key="key">
       <i :class="searchIcon(key)"></i>
       <div>
-        <span>{{ info || 'Não informado.'}}</span>
+        <a 
+        :href="[key == 'Telefone' ? searchIcon(key)['link']+info.replace(/\D/g, '') : searchIcon(key)['link']+info]"
+        target="_blank"
+        >{{ info || 'Não informado.'}}</a>
         <small>{{ key }}</small>
       </div>
     </div>
@@ -41,10 +44,12 @@ const icons = [
     color: "#2929f8"
   },
   {
-    Telefone: "fas fa-phone-alt"
+    Telefone: "fas fa-phone-alt",
+    link: "https://wa.me/"
   },
   {
-    Email: "fas fa-envelope"
+    Email: "fas fa-envelope",
+    link: "mailto:"
   }
 ]
 
@@ -95,10 +100,11 @@ export default {
   font-size: 14px;
 }
 
-.content span {
+.content a {
   margin-bottom: 2px;
   display: block;
   font-size: 15px;
+  color: black;
 }
 
 .content small {

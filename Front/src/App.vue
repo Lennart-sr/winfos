@@ -1,5 +1,5 @@
 <template>
-  <router-view v-if="loaded"/>
+  <router-view v-if="loaded" />
   <div v-else>
     <ul class="loading">
       <li></li>
@@ -10,26 +10,12 @@
   </div>
 </template>
 <script>
-import axios from "axios";
+import fetchUser from "@/mixins/fetchUser.js";
 
 export default {
-  data(){
-    return {
-      loaded: false
-    }
-  },
-  methods: {
-    getUsers() {
-      axios
-        .post("/users", { key: "A RANDOM SECRET KEY" })
-        .then((res) => {
-          this.$store.state.users = res.data;
-          this.loaded = true;
-        })
-    },
-  },
+  mixins: [fetchUser],
   created() {
-    this.getUsers()
+    this.getUsers();
   },
 };
 </script>
@@ -93,16 +79,16 @@ button {
 }
 
 .alert {
-	display: block;
-	color: red;
-	font-size: 13px;
+  display: block;
+  color: red;
+  font-size: 13px;
 }
 
 .loading {
   position: absolute;
   top: 50%;
-  left:50%;
-  transform: translate(-50%,-50%);
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   margin: 0;
   padding: 0;
@@ -120,24 +106,26 @@ button {
   background: #2b2b2b;
 }
 
-.loading li:nth-child(1){
+.loading li:nth-child(1) {
   animation-delay: -1.4s;
 }
 
-.loading li:nth-child(2){
+.loading li:nth-child(2) {
   animation-delay: -1.2s;
 }
 
-.loading li:nth-child(3){
+.loading li:nth-child(3) {
   animation-delay: -1s;
 }
 
-.loading li:nth-child(4){
+.loading li:nth-child(4) {
   animation-delay: -0.8s;
 }
 
 @keyframes ani {
-  0%, 40%, 100% {
+  0%,
+  40%,
+  100% {
     transform: scale(0.2);
   }
   20% {

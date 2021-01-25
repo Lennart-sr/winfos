@@ -22,24 +22,22 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'Home',
   computed: {
-    users(){
-      return this.$store.state.users
-    },
+    ...mapState(['users', 'user'])
   },
   methods: {
-    viewUser(user){
-      this.$store.state.user = this.users.filter(r => r.link === user.target.dataset.link)[0];
+    viewUser({ target: { dataset: { link } } }){
+      this.UPDATE_USER(this.users.filter(r => r.link === link)[0]);
       
-      if(this.$store.state.user.link)
-        this.$router.push(`/${user.target.dataset.link}`);
+      if(this.user.link)
+        this.$router.push(`/${link}`);
     },
-  },
-  components: {
-  },
+    ...mapMutations(['UPDATE_USER'])
+  }
 }
 </script>
 <style scoped>

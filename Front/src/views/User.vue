@@ -16,17 +16,7 @@
 
 <script>
 import Nav from "@/components/Nav.vue";
-
-function changeFavicon(src) {
-  const link = document.createElement("link"),
-        oldLink = document.getElementById("dynamic-favicon");
-  link.id = "dynamic-favicon";
-  link.rel = "shortcut icon";
-  link.href = src;
-  if (oldLink) document.head.removeChild(oldLink);
-
-  document.head.appendChild(link);
-}
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: "User",
@@ -34,29 +24,35 @@ export default {
     Nav,
   },
   computed: {
-    users() {
-      return this.$store.state.users;
-    },
-    user() {
-      return this.$store.state.user;
-    },
+    ...mapState(['user','users'])
   },
   methods: {
     checkRoute() {
       if (!this.user.link) {
-        this.$store.commit('increment', this.users.filter(
+        this.UPDATE_USER(this.users.filter(
           r => r.link === this.$route.params.user
-        )[0]);
+        )[0])
 
         if (!this.user) this.$router.push("/");
 
         if(this.user.images.favicon.link)
-          changeFavicon(this.user.images.favicon.link);
+          this.changeFavicon(this.user.images.favicon.link);
 
         if(this.user.title)
           document.title = this.user.title;
       }
     },
+    changeFavicon(src) {
+      const link = document.createElement("link"),
+            oldLink = document.getElementById("dynamic-favicon");
+      link.id = "dynamic-favicon";
+      link.rel = "shortcut icon";
+      link.href = src;
+      if (oldLink) document.head.removeChild(oldLink);
+
+      document.head.appendChild(link);
+    },
+    ...mapMutations(['UPDATE_USER'])
   },
   created() {
     this.checkRoute();

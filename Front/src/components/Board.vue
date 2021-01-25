@@ -110,120 +110,17 @@
 
 
 <script>
-import axios from "axios";
+import { mapState } from "vuex";
+import fetchUser from "@/mixins/fetchUser.js";
+import imgur from "@/mixins/imgur.js";
 
 export default {
   name: "Board",
-  data() {
-    return {
-      image: "",
-      tempUser: {
-        "user": "",
-        "password": "",
-        "authorized": true,
-        "title": "",
-        "link": "",
-        "subtitle": "",
-        "color": "",
-        "infos": {
-          "Telefone": "",
-          "Email": ""
-        },
-        "social": {
-          "Instagram": "",
-          "Twitter": "",
-          "Facebook": ""
-        },
-        "images": {
-            "profile": {
-              "link": "",
-              "delete": ""
-            },
-            "favicon": {
-              "link": "",
-              "delete": ""
-            },
-          "others": []
-          }
-      },
-      url: location.origin
-    };
-  },
+  mixins: [fetchUser, imgur],
   computed: {
-    user() {
-      return this.$store.state.user;
-    },
+    ...mapState(["user"])
   },
   methods: {
-    handleImage(e) {
-      const selectedImage = e.target.files[0];
-      this.createBase64Image(selectedImage, e.target.id);
-    },
-    createBase64Image(fileObject, id) {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        this.image = e.target.result;
-        this.uploadImage(id);
-      };
-      reader.readAsDataURL(fileObject);
-    },
-    uploadImage(id) {
-      const { image } = this;
-      let config = {
-        method: "post",
-        url: "https://api.imgur.com/3/image",
-        headers: {
-          Authorization: "Client-ID 457322c1f1e74d5",
-        },
-        data: {
-          image: image.replace(/.*,/, ""),
-        },
-      };
-
-      axios(config)
-        .then((res) => {
-          const { deletehash, link } = res.data.data;
-
-          if(id == "others"){
-            this.user.images.others.push({
-              link,
-              delete: deletehash,
-            });
-          }else{
-            const { hash } = document.querySelector(`#h-${id}`).dataset;
-            if (hash) this.deleteImage(hash);
-
-            this.user.images[id] = {
-              link,
-              delete: deletehash,
-            };
-          }
-
-          this.updateUser();
-        })
-    },
-    deleteImage(hash) {
-      let config = {
-        method: "delete",
-        url: `https://api.imgur.com/3/image/${hash}`,
-        headers: {
-          Authorization: "Client-ID 457322c1f1e74d5",
-        },
-      };
-      axios(config)
-      .then(() => {
-        const index = this.user.images.others.findIndex(r => r.delete == hash);
-        if(index >= 0){
-          this.user.images.others.splice(index, 1)
-          this.updateUser()
-        }
-      })
-    },
-    updateUser() {
-      axios
-        .post("/actions/update", this.user)
-    },
     concat(obj1, obj2) {
     for(const key in obj2) {
         if(!obj2[key] && typeof obj2[key] !== "number") continue
@@ -243,7 +140,7 @@ export default {
       handler(){
         this.concat(this.user, this.tempUser);
         const { Instagram, Facebook, Twitter } = this.tempUser.social;
-        this.user.social = { Instagram, Facebook, Twitter};
+        this.user.social = { Instagram, Facebook, Twitter };
         this.updateUser()
      },
      deep: true

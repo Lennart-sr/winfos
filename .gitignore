@@ -1,3 +1,10 @@
 .DS_Store
+Back/
+Back/yarn.lock
+Back/package-lock.json
+
 Front/node_modules
-Back/node_modules
+Front/dist
+Front/yarn.lock
+Front/.env
+Front/.env.production.local
